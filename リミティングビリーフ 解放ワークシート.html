@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>リミティングビリーフ 解放ワークシート</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Hiragino Sans','Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif;background:#f7f6f3;color:#1a1a1a;font-size:14px}
+.container{max-width:720px;margin:0 auto;padding:2rem 1.5rem 4rem}
+.header{margin-bottom:2rem}
+.header h1{font-size:22px;font-weight:600;color:#1a1a1a;margin-bottom:6px}
+.header p{font-size:13px;color:#666;line-height:1.6}
+.progress{display:flex;gap:6px;margin-bottom:2rem}
+.prog-dot{height:5px;flex:1;border-radius:3px;background:#ddd;transition:background 0.3s}
+.prog-dot.done{background:#1D9E75}
+.prog-dot.active{background:#7F77DD}
+.step{background:#fff;border:1px solid #e8e6e0;border-radius:12px;padding:1.5rem;margin-bottom:1rem;display:none}
+.step.active{display:block}
+.step-head{display:flex;align-items:flex-start;gap:12px;margin-bottom:1.25rem}
+.step-num{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0}
+.s1 .step-num{background:#EEEDFE;color:#3C3489}
+.s2 .step-num{background:#FCEBEB;color:#791F1F}
+.s3 .step-num{background:#FAEEDA;color:#633806}
+.s4 .step-num{background:#EAF3DE;color:#27500A}
+.s5 .step-num{background:#E1F5EE;color:#085041}
+.step-title{font-size:15px;font-weight:600;color:#1a1a1a;line-height:1.4;margin-bottom:3px}
+.step-hint{font-size:12px;color:#888;line-height:1.5}
+.tag{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;margin-bottom:12px}
+.tag-emotion{background:#FAECE7;color:#993C1D}
+.tag-pain{background:#FCEBEB;color:#A32D2D}
+.tag-logic{background:#FAEEDA;color:#854F0B}
+.tag-joy{background:#EAF3DE;color:#3B6D11}
+.tag-habit{background:#E1F5EE;color:#0F6E56}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12px;font-weight:600;color:#666;margin-bottom:5px}
+textarea{width:100%;border:1px solid #ddd;border-radius:8px;padding:9px 11px;font-size:14px;font-family:inherit;color:#1a1a1a;background:#fafaf8;resize:vertical;line-height:1.6;transition:border-color 0.2s}
+textarea:focus{outline:none;border-color:#7F77DD;background:#fff}
+.qbox{background:#fafaf8;border:1px solid #eee;border-radius:8px;padding:12px 14px;margin-bottom:12px}
+.qbox .qlabel{font-size:12px;color:#888;font-style:italic;margin-bottom:7px;line-height:1.5}
+.qbox input{width:100%;border:none;border-bottom:1px solid #e0e0e0;background:transparent;font-size:13px;font-family:inherit;color:#1a1a1a;padding:5px 0;outline:none;margin-bottom:6px}
+.qbox input:focus{border-bottom-color:#7F77DD}
+.qbox input:last-child{margin-bottom:0}
+.divider{border:none;border-top:1px solid #eee;margin:16px 0}
+.commit-label{font-size:13px;font-weight:600;color:#1a1a1a;margin-bottom:6px;display:block}
+.btn-row{display:flex;gap:8px;margin-top:1rem}
+.btn{padding:10px 16px;border:1px solid #ddd;border-radius:8px;background:#f7f6f3;font-size:14px;font-family:inherit;color:#333;cursor:pointer;transition:background 0.15s}
+.btn:hover{background:#eee}
+.btn-next{flex:1;font-weight:500}
+.btn-back{color:#888;font-size:13px;flex:0 0 auto}
+.btn-finish{flex:1;background:#EEEDFE;border-color:#AFA9EC;color:#3C3489;font-weight:600}
+.btn-finish:hover{background:#CECBF6}
+.done-screen{display:none;background:#fff;border:1px solid #e8e6e0;border-radius:12px;padding:2rem;text-align:center}
+.done-title{font-size:17px;font-weight:600;color:#1a1a1a;margin-bottom:8px}
+.done-sub{font-size:14px;color:#666;line-height:1.7;margin-bottom:1.5rem}
+.btn-pdf{width:100%;padding:12px;background:#EEEDFE;border:1px solid #AFA9EC;border-radius:8px;font-size:15px;font-family:inherit;color:#3C3489;font-weight:600;cursor:pointer;margin-bottom:8px}
+.btn-pdf:hover{background:#CECBF6}
+.btn-row-done{display:flex;gap:8px}
+.btn-row-done .btn{flex:1}
+
+@media print{
+  body{background:#fff}
+  .container{padding:0;max-width:100%}
+  .progress,.btn-row,.btn-row-done,.btn-pdf,.done-screen{display:none!important}
+  .step{display:block!important;border:none;border-radius:0;padding:0;margin-bottom:0;page-break-inside:avoid}
+  .step+.step{border-top:1px solid #ddd;padding-top:1.2rem;margin-top:1.2rem}
+  textarea{border:none;background:transparent;padding:0;resize:none;min-height:unset}
+  .qbox{border:none;background:transparent;padding:0}
+  .qbox input{border-bottom:1px solid #ccc}
+  .header{margin-bottom:1rem}
+  .print-date{display:block!important}
+}
+.print-date{display:none;font-size:11px;color:#999;margin-top:4px}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>リミティングビリーフ 解放ワークシート</h1>
+    <p>ラピッドチェンジ・フォーミュラに基づき、自分を制限する思い込みを特定・破壊し、新しい信念へと書き換える</p>
+    <span class="print-date" id="print-date"></span>
+  </div>
+
+  <div class="progress">
+    <div class="prog-dot active" id="pd1"></div>
+    <div class="prog-dot" id="pd2"></div>
+    <div class="prog-dot" id="pd3"></div>
+    <div class="prog-dot" id="pd4"></div>
+    <div class="prog-dot" id="pd5"></div>
+  </div>
+
+  <div class="step s1 active" id="step1">
+    <div class="step-head">
+      <div class="step-num">1</div>
+      <div><div class="step-title">ネガティブな感情からビリーフを特定する</div><div class="step-hint">感情はリミティングビリーフの入口。逃げずに向き合う</div></div>
+    </div>
+    <span class="tag tag-emotion">感情の特定</span>
+    <div class="field"><label>今感じているネガティブな感情は？</label><textarea id="f1_1" rows="2" placeholder="例）大きな案件を前にした不安、失敗への恐怖…"></textarea></div>
+    <div class="qbox"><div class="qlabel">「何を信じることで、このように感じているのだろうか？」</div><input id="f1_2" placeholder="例）自分には人を動かす力がない、と信じている…" /></div>
+    <div class="field"><label>特定できたリミティングビリーフを一文で書く</label><textarea id="f1_3" rows="2" placeholder="例）「私は大舞台では失敗する」"></textarea></div>
+    <div class="btn-row"><button class="btn btn-next" onclick="goNext(1)">次のステップへ →</button></div>
+  </div>
+
+  <div class="step s2" id="step2">
+    <div class="step-head">
+      <div class="step-num">2</div>
+      <div><div class="step-title">古いビリーフに強烈な「痛み」を結びつける</div><div class="step-hint">変化のエネルギーは「このままではまずい」という危機感から生まれる</div></div>
+    </div>
+    <span class="tag tag-pain">痛みの増幅</span>
+    <div class="qbox"><div class="qlabel">このビリーフのせいで、これまでに失ったものは？（機会・お金・人間関係・時間など）</div><input id="f2_1" placeholder="例）重要な登壇機会を断り続けた、信頼を失った…" /></div>
+    <div class="qbox"><div class="qlabel">このビリーフを持ち続けると、10年後の自分はどうなっている？</div><input id="f2_2" placeholder="例）チャンスを逃し続け、同じ場所に留まっている…" /></div>
+    <div class="field"><label>このビリーフを持ち続けることへの嫌悪感を自分の言葉で書く</label><textarea id="f2_3" rows="3" placeholder="例）このまま縮こまった自分でいることは、もう絶対に許せない。"></textarea></div>
+    <div class="btn-row"><button class="btn btn-back" onclick="goBack(2)">← 戻る</button><button class="btn btn-next" onclick="goNext(2)">次のステップへ →</button></div>
+  </div>
+
+  <div class="step s3" id="step3">
+    <div class="step-head">
+      <div class="step-num">3</div>
+      <div><div class="step-title">「一般化の罠」に気づき、ビリーフを破壊する</div><div class="step-hint">思い込みの根拠（テーブルの脚）を1本ずつ折る</div></div>
+    </div>
+    <span class="tag tag-logic">論理的破壊</span>
+    <div class="qbox"><div class="qlabel">「私はいつもそうだろうか？」── そうではなかった具体的な例外は？</div><input id="f3_1" placeholder="例）去年のプレゼンでは場を動かした、あの交渉は成功した…" /></div>
+    <div class="qbox"><div class="qlabel">「この思い込みの本当の真実は何だろうか？」</div><input id="f3_2" placeholder="例）一度失敗したことを、すべてに当てはめていただけ…" /></div>
+    <div class="field"><label>このビリーフを支えていた根拠（原体験）は何だったか？</label><textarea id="f3_3" rows="2" placeholder="例）5年前の失敗発表を引きずっていた"></textarea></div>
+    <div class="field"><label>その根拠は今も有効か？なぜ無効だと言えるか？</label><textarea id="f3_4" rows="2" placeholder="例）あの頃とは経験も準備も全く違う。もう同じ自分ではない。"></textarea></div>
+    <div class="btn-row"><button class="btn btn-back" onclick="goBack(3)">← 戻る</button><button class="btn btn-next" onclick="goNext(3)">次のステップへ →</button></div>
+  </div>
+
+  <div class="step s4" id="step4">
+    <div class="step-head">
+      <div class="step-num">4</div>
+      <div><div class="step-title">新しい「力を与える信念」に置き換え、「快楽」を結びつける</div><div class="step-hint">古い信念を壊したスペースに、新しいアイデンティティを植え込む</div></div>
+    </div>
+    <span class="tag tag-joy">新信念の設定</span>
+    <div class="field"><label>新しい力を与える信念（ポジティブなビリーフ）を一文で書く</label><textarea id="f4_1" rows="2" placeholder="例）「私は準備と経験を活かして、場を動かす力がある」"></textarea></div>
+    <div class="qbox">
+      <div class="qlabel">この新しい信念を持つことで、どんな良いことが起きる？（具体的に5つ）</div>
+      <input id="f4_2a" placeholder="1." /><input id="f4_2b" placeholder="2." /><input id="f4_2c" placeholder="3." /><input id="f4_2d" placeholder="4." /><input id="f4_2e" placeholder="5." />
+    </div>
+    <div class="field"><label>この新しい自分として動いたとき、1年後の自分はどうなっている？</label><textarea id="f4_3" rows="3" placeholder="例）大舞台で自信を持って登壇し、信頼とチャンスが集まっている…"></textarea></div>
+    <div class="btn-row"><button class="btn btn-back" onclick="goBack(4)">← 戻る</button><button class="btn btn-next" onclick="goNext(4)">次のステップへ →</button></div>
+  </div>
+
+  <div class="step s5" id="step5">
+    <div class="step-head">
+      <div class="step-num">5</div>
+      <div><div class="step-title">環境を整え、新しい習慣を作り出す</div><div class="step-hint">一時的な変化で終わらせない。行動と環境で信念を定着させる</div></div>
+    </div>
+    <span class="tag tag-habit">習慣化・環境設計</span>
+    <div class="field"><label>今週から始める具体的な行動は？</label><textarea id="f5_1" rows="2" placeholder="例）毎週1回5分間、声に出してビリーフを読み上げる"></textarea></div>
+    <div class="field"><label>距離を置くべきネガティブな影響（人・場所・習慣）は？</label><textarea id="f5_2" rows="2" placeholder="例）自己否定を強化するSNS、批判ばかりの集まり…"></textarea></div>
+    <div class="field"><label>自分を引き上げてくれる環境・人・コミュニティは？</label><textarea id="f5_3" rows="2" placeholder="例）JCI・信頼できるメンター・業界の第一人者の発信…"></textarea></div>
+    <hr class="divider">
+    <span class="commit-label">コミットメント宣言</span>
+    <textarea id="f5_4" rows="3" placeholder="例）私は「___」という古い思い込みを手放し、「___」という信念で生きることを今日ここに決める。"></textarea>
+    <div class="btn-row"><button class="btn btn-back" onclick="goBack(5)">← 戻る</button><button class="btn btn-finish" onclick="finish()">ワークシートを完了する</button></div>
+  </div>
+
+  <div class="done-screen" id="done-screen">
+    <div class="done-title">ワーク完了！</div>
+    <div class="done-sub">古い思い込みを特定・破壊し、新しい信念を設定しました。<br>この変化を定着させるために、今日書いた行動を一つ実行してみましょう。</div>
+    <button class="btn-pdf" onclick="printPDF()">🖨 PDFとして保存する（印刷画面が開きます）</button>
+    <div class="btn-row-done">
+      <button class="btn" onclick="goBackFromDone()">← 戻って修正する</button>
+      <button class="btn" onclick="restart()">最初からやり直す</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let current = 1;
+
+function showStep(n) {
+  for (let i = 1; i <= 5; i++) {
+    document.getElementById('step' + i).classList.remove('active');
+    const pd = document.getElementById('pd' + i);
+    pd.classList.remove('active', 'done');
+    if (i < n) pd.classList.add('done');
+    if (i === n) pd.classList.add('active');
+  }
+  document.getElementById('done-screen').style.display = 'none';
+  document.getElementById('step' + n).classList.add('active');
+  current = n;
+  document.getElementById('step' + n).scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function goNext(n) { showStep(n + 1); }
+function goBack(n) { if (n > 1) showStep(n - 1); }
+
+function finish() {
+  document.getElementById('step5').classList.remove('active');
+  for (let i = 1; i <= 5; i++) {
+    const pd = document.getElementById('pd' + i);
+    pd.classList.remove('active');
+    pd.classList.add('done');
+  }
+  document.getElementById('done-screen').style.display = 'block';
+  document.getElementById('done-screen').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function goBackFromDone() {
+  document.getElementById('done-screen').style.display = 'none';
+  showStep(5);
+}
+
+function restart() {
+  for (let i = 1; i <= 5; i++) {
+    document.getElementById('step' + i).querySelectorAll('textarea, input').forEach(el => el.value = '');
+  }
+  showStep(1);
+}
+
+function printPDF() {
+  const today = new Date();
+  const d = today.getFullYear() + '年' + (today.getMonth() + 1) + '月' + today.getDate() + '日';
+  document.getElementById('print-date').textContent = d + '記入';
+
+  for (let i = 1; i <= 5; i++) {
+    document.getElementById('step' + i).classList.add('active');
+  }
+  document.getElementById('done-screen').style.display = 'none';
+
+  setTimeout(() => {
+    window.print();
+    setTimeout(() => {
+      for (let i = 1; i <= 5; i++) {
+        if (i !== current) document.getElementById('step' + i).classList.remove('active');
+      }
+      document.getElementById('done-screen').style.display = 'block';
+    }, 1000);
+  }, 100);
+}
+</script>
+</body>
+</html>
